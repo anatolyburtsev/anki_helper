@@ -13,6 +13,11 @@ def get_popular_word(filename):
     return result
 
 
+def save_text_to_file(text, filename):
+    with open(filename, 'w') as f:
+        f.write(text)
+
+
 def is_string_good(line, delimiter):
         if not line:
             return False

@@ -37,7 +37,11 @@ def lookup_ts_pos(word, lang="en-en", key=config.dict_key, ui="en"):
     )
     empty_response = '{"head":{},"def":[]}'
 
-    response = requests.get(req)
+    try:
+        response = requests.get(req)
+    except:
+        logging.error("Couldn't get info for word:" + word)
+        raise
     if response.status_code != 200:
         logging.error("problem with request:{}".format(req))
     # print("req=" + req)
