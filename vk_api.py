@@ -35,5 +35,6 @@ def simplify_vk_url(url):
 if __name__ == "__main__":
     # req = 'https://vk.com/wall-12648877_1677895'
     req = 'https://vk.com/wall-12648877_1663646'
+    req = 'https://vk.com/wall-12648877_1226405'
     # print(url_to_post_text_converter(req))
-    simplify_vk_url("https://vk.com/wall-12648877_1663646")
+    print( simplify_vk_url(req))

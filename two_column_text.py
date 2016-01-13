@@ -14,8 +14,7 @@ class TwoColumnText:
     text = ""
     url = ""
     handled_text = ""
-    # TODO find right dash
-    delimiter = " – "
+    delimiter = ""
     left_part_regexp = re.compile('[a-zA-Z\-]+')
 
     set_of_popular_words = helpers.get_popular_word(config.list_top_words)
@@ -34,6 +33,7 @@ class TwoColumnText:
 
     def handle_text(self, line_delimiter="\n"):
         result_text = ""
+        self.delimiter = helpers.find_delimiter(self.text)
         for line in self.text.split(line_delimiter):
             # здесь формируется вывод
             if not helpers.is_string_good(line, self.delimiter):
@@ -79,6 +79,6 @@ pharynx – глотка."""
 
     url = "https://vk.com/wall-87512171_139"
     txt = vk_api.url_to_post_text_converter(url)
-    t = TwoColumnText(txt)
+    t = TwoColumnText(txt, url)
     result = t.handle_text()
     print(result)

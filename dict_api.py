@@ -32,16 +32,23 @@ def lookup_ts_pos_force(text, key=config.dict_key):
 def lookup_ts_pos(word, lang="en-en", key=config.dict_key, ui="en"):
     assert type(word) == str
     assert len(word.split(' ')) == 1
+    attempts = 5
     req = 'https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key={}&text={}&lang={}&ui={}'.format(
         key, word, lang, ui
     )
     empty_response = '{"head":{},"def":[]}'
 
-    try:
-        response = requests.get(req)
-    except:
-        logging.error("Couldn't get info for word:" + word)
-        raise
+    for i in range(attempts):
+        try:
+            response = requests.get(req)
+        except:
+            if i + 1 != attempts:
+                logging.info("Couldn't get info for word:" + word + ". Try again.")
+            else:
+                logging.error("Couldn't get info for word:" + word)
+                raise
+        else:
+            break
     if response.status_code != 200:
         logging.error("problem with request:{}".format(req))
     # print("req=" + req)
