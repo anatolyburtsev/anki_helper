@@ -12,13 +12,13 @@ import config
 app = Flask(__name__)
 
 
-@app.route("/")
 def hello():
     # return send_file('results_share/wall-87512171_139.txt')
     return url_for("results_share", filename="wall-87512171_139.txt")
     # return "Hello World!"
 
 
+@app.route("/")
 @app.route("/enter_url_to_vk")
 def welcome_process_post_text():
     return render_template("vk_url_field.html")
