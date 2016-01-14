@@ -56,4 +56,4 @@ if __name__ == "__main__":
     # url="https://vk.com/wall-12648877_1663646"
     # vk_api.url_to_post_text_converter(url)
     app.debug
-    app.run()
+    app.run(host='0.0.0.0', port=8080)
