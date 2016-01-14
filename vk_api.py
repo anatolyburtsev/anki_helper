@@ -4,11 +4,16 @@ import logging
 import re
 
 
+class VKErrorException(Exception):
+    pass
+
+
 def url_to_post_text_converter(url):
     assert type(url) == str
     response = requests.get(url)
-    if not response.ok:
+    if not response.ok or not response.text:
         logging.error("problem with url: " + url)
+        raise VKErrorException
     soup = BeautifulSoup(response.text, 'html.parser')
     post_text = soup.find("div", attrs={'class': 'pi_text'})
     post_text = str(post_text).replace("<br/>", "\n")

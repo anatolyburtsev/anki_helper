@@ -29,7 +29,10 @@ def process_post_text():
     tt = time.time()
     url = request.form["url_to_post"]
     url = vk_api.simplify_vk_url(url)
-    text = vk_api.url_to_post_text_converter(url)
+    try:
+        text = vk_api.url_to_post_text_converter(url)
+    except vk_api.VKErrorException:
+        return "Couldn't download post from VK"
     t = two_column_text.TwoColumnText(text, url)
     result = t.handle_text()
     if not result:
