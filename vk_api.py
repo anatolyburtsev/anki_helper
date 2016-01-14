@@ -10,7 +10,8 @@ class VKErrorException(Exception):
 
 def url_to_post_text_converter(url):
     assert type(url) == str
-    response = requests.get(url)
+    header = {'user-agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=header)
     if not response.ok or not response.text:
         logging.error("problem with url: " + url)
         raise VKErrorException
@@ -35,7 +36,7 @@ def simplify_vk_url(url):
     :return str:
     """
     suffix = re.findall("wall-\d+_\d+", url)[0]
-    return "https://m.vk.com/" + suffix
+    return "http://m.vk.com/" + suffix
 
 
 if __name__ == "__main__":
