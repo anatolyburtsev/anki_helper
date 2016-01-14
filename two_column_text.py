@@ -4,6 +4,7 @@ import dict_api
 import helpers
 import vk_api
 import os.path
+import os
 import logging
 import time
 
@@ -50,6 +51,8 @@ class TwoColumnText:
     def save_handled_text(self, dir_to_save=config.result_share):
         if not self.handled_text:
             self.handle_text()
+        if not os.path.exists(dir_to_save):
+            os.mkdir(dir_to_save)
         filename = self.url.split('/')[-1] + ".txt"
         path_to_file = os.path.join(dir_to_save, filename)
         helpers.save_text_to_file(self.handled_text, path_to_file)
