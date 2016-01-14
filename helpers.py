@@ -35,7 +35,7 @@ def make_beauty_1_word(words_dict):
     pos = ts = ""
     if words_dict["pos"]:
         pos = "(" + words_dict["pos"] + ")"
-    if words_dict["ts"]:
+    if words_dict["ts"].strip():
         ts = "/ " + words_dict["ts"] + " /"
     return result.format(pos=pos, word="{eng}", ts=ts, rus="{rus}", tab="{tab}")
 

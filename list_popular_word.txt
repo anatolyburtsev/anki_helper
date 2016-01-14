@@ -9,6 +9,7 @@ use
 work
 new
 find
+of
 now
 need
 get
