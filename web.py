@@ -38,7 +38,7 @@ def process_post_text():
     if not result:
         return "Bad text"
     else:
-        path_to_file = t.save_handled_text()ix.split('/')[-1]
+        path_to_file = t.save_handled_text().split('/')[-1]
         return render_template("download_file.html", filename=path_to_file, working_time=str(time.time() - tt))
         # return send_file(path_to_file)
         # path_to_dir = "/".join(path_to_file.split("/")[:-1])
