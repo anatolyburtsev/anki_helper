@@ -5,6 +5,7 @@ import helpers
 import vk_api
 import os.path
 import logging
+import time
 
 logging.basicConfig(format=u'%(filename)s[LINE:%(lineno)d]# %(levelname)-8s [%(asctime)s]  %(message)s',
                     level=logging.ERROR)
@@ -78,7 +79,9 @@ pharynx – глотка."""
     # print(t.handle_text())
 
     url = "https://vk.com/wall-87512171_139"
+    tt = time.time()
     txt = vk_api.url_to_post_text_converter(url)
     t = TwoColumnText(txt, url)
     result = t.handle_text()
+    print(str(time.time() - tt) + ' secs')
     print(result)

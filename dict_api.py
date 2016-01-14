@@ -30,6 +30,7 @@ def lookup_ts_pos_force(text, key=config.dict_key):
 
 
 def lookup_ts_pos(word, lang="en-en", key=config.dict_key, ui="en"):
+    # https://dictionary.yandex.net/api/v1/dicservice.json/lookup?key=dict.1.1.20160106T144241Z.c1a1cf55a776643c.803d1e827d414dbf3d957bd3f683778a6ed29fc1&text=hello&lang=en-en&ui=en
     assert type(word) == str
     assert len(word.split(' ')) == 1
     attempts = 5
