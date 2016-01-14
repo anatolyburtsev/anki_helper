@@ -15,6 +15,7 @@ def url_to_post_text_converter(url):
         logging.error("problem with url: " + url)
         raise VKErrorException
     soup = BeautifulSoup(response.text, 'html.parser')
+    post_text = soup.find("div", attrs={'class': "wi_body"})
     post_text = soup.find("div", attrs={'class': 'pi_text'})
     post_text = str(post_text).replace("<br/>", "\n")
     post_text = BeautifulSoup(post_text, "html.parser").text
@@ -34,12 +35,12 @@ def simplify_vk_url(url):
     :return str:
     """
     suffix = re.findall("wall-\d+_\d+", url)[0]
-    return "https://vk.com/" + suffix
+    return "https://m.vk.com/" + suffix
 
 
 if __name__ == "__main__":
     # req = 'https://vk.com/wall-12648877_1677895'
     req = 'https://vk.com/wall-12648877_1663646'
     req = 'https://vk.com/wall-12648877_1226405'
-    # print(url_to_post_text_converter(req))
+    print(url_to_post_text_converter(req))
     print( simplify_vk_url(req))
