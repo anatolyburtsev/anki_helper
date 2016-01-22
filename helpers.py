@@ -2,6 +2,10 @@ import dict_api
 import re
 import logging
 
+ENGLISH_LETTERS = set(['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','v','u','w','x',
+                      'y','z'])
+RUSSIAN_LETTERS = set(['а','б','в','г','д','е','ё','ж','з','и','й','к','л','м','н','о','п','р','с','т','у','ф','х','ц',
+                      'ч','ш','щ','ъ','ы','ь','э','ю','я'])
 
 def get_popular_word(filename):
     # TODO check file for exist
@@ -46,9 +50,11 @@ def make_beauty_some_words(words_dict, pos):
     if pos:
         pos = "(" + pos + ")"
     for word in words_dict:
-        if word["ts"]:
+        if word["ts"].strip() != "":
             ts = ts + " " + word["ts"] + " "
     ts += "/"
+    if ts == "//":
+        ts = ""
     return result.format(pos=pos, word="{eng}", ts=ts, rus="{rus}", tab="{tab}")
 
 
@@ -84,7 +90,7 @@ def handle_words_or_word(words):
             return handle_words(words)
 
 
-def find_delimiter(text):
+def find_delimiter(text, dash_types=False):
     """
     >>> find_delimiter("resume - резюме")
     ' - '
@@ -108,7 +114,8 @@ def find_delimiter(text):
     """
 
     # in PyCharm they looks similar, but they are differ
-    dash_types = [' — ', ' - ', ' - ']
+    if not dash_types:
+        dash_types = [' — ', ' - ', ' - ']
 
     # current dash is right if it's relevant for more then koeff*100% strings.
     koeff = 0.5
@@ -117,7 +124,7 @@ def find_delimiter(text):
         all_line = 0
         suitable_for_this_delimiter = 0
         for line in text.split("\n"):
-            if line:
+            if line.strip() != "":
                 all_line += 1
             if len(line.split(dash)) == 2:
                 l_part, r_part = line.split(dash)
@@ -126,11 +133,74 @@ def find_delimiter(text):
         if float(suitable_for_this_delimiter)/all_line > koeff:
             return dash
 
-    logging.error("delimiter not found. text:" + text)
-    return dash_types[0]
+    # logging.error("delimiter not found. text:" + text)
+    return False
 
 
+def find_delimiter_euristic(text):
+    """
+    :param text:
+    :return delimiter:
+    """
 
+    handled_text = []
+    possible_delimiter = []
+    for line in text.split("\n"):
+        if line.strip() != "" and re.search("[a-zA-Z]+", line) and re.search("[а-яА-Я]+", line):
+            handled_text.append(line)
+
+    for line in handled_text:
+        possible_delimiter.append(find_delimiter_euristic_line(line))
+
+    delimiters_dict = {}
+    for d in possible_delimiter:
+        if d not in delimiters_dict.keys():
+            delimiters_dict[d] = 1
+        else:
+            delimiters_dict[d] += 1
+
+    delimiter_amount_max = 0
+    delimiter_most_popular = ""
+    for delimiter, delimiter_amount in delimiters_dict.items():
+        if delimiter_amount > delimiter_amount_max:
+            delimiter_amount = delimiter_amount_max
+            delimiter_most_popular = delimiter
+
+    return delimiter_most_popular
+
+
+def find_delimiter_euristic_line(line):
+    """
+    >>> find_delimiter_euristic_line("startle at smth– вздрогнуть от чего-то")
+    '–'
+    >>> find_delimiter_euristic_line(" pew/PEW-wow @ пышь/ПЫШЬ")
+    '@'
+    >>> find_delimiter_euristic_line("  пышь/ПЫШЬ @  pew/PEW-wow ")
+    '@'
+
+    :param line:
+    :return:
+    """
+    finish_1st_part = 0
+    start_2nd_part = 0
+    line = line.strip().lower()
+    # Eng -> Rus
+    if line[0] in ENGLISH_LETTERS:
+        first_languages_letters = ENGLISH_LETTERS
+        second_langueage_letters = RUSSIAN_LETTERS
+    else:
+        first_languages_letters = RUSSIAN_LETTERS
+        second_langueage_letters = ENGLISH_LETTERS
+
+    for letter_no in range(len(line)):
+        if line[letter_no] in first_languages_letters:
+            finish_1st_part = letter_no
+        if line[letter_no] in second_langueage_letters and not start_2nd_part:
+            start_2nd_part = letter_no
+
+    assert start_2nd_part > finish_1st_part
+    delimiter = line[finish_1st_part+1:start_2nd_part].strip()
+    return delimiter
 
 
 
@@ -171,11 +241,34 @@ def is_russian(text):
 
 
 if __name__ == "__main__":
-    dt = {"ts": "ˈæˌktʃuəli, ˈæktʃli, ˈækʃəli", "pos": "adv.", "word": "actually" }
-    print(make_beauty_1_word(dt))
-    words = [{"ts": "ˈkɒrən(ə)rɪ", "pos": "noun.", "word": "coronary" },
-             {"ts": "ˈɑːtərɪ", "pos": "noun", "word": "artery"},
-             {"ts": "veɪn", "pos": "", "word": "vein"}]
-    # print(make_beauty_some_words(words, "noun."))
-    # print(handle_words(["bronchi", "artery", "vein"]))
-    print(is_english("abя"))
+    # dt = {"ts": "ˈæˌktʃuəli, ˈæktʃli, ˈækʃəli", "pos": "adv.", "word": "actually" }
+    # print(make_beauty_1_word(dt))
+    # words = [{"ts": "ˈkɒrən(ə)rɪ", "pos": "noun.", "word": "coronary" },
+    #          {"ts": "ˈɑːtərɪ", "pos": "noun", "word": "artery"},
+    #          {"ts": "veɪn", "pos": "", "word": "vein"}]
+    # # print(make_beauty_some_words(words, "noun."))
+    # # print(handle_words(["bronchi", "artery", "vein"]))
+    # print(is_english("abя"))
+
+    # test euristic_delimiter_finder
+    text = """СТРАХ
+
+feel sick at smth – слабеть при виде чего-то
+
+pallid at smth – побледневший от чего-то
+
+startle at smth– вздрогнуть от чего-то
+
+aghast at smth – пораженный ужасом при виде
+
+appalled at / with smth – устрашенный чем-то
+
+dismayed at / with smth – приведенный в ужас чем-то
+
+frightened at smth – испуганный чем-то
+
+horrified at smth – в ужасе от чего-то
+"""
+
+    print( find_delimiter_euristic(text))
+    print (find_delimiter_euristic_line("startle at smth– вздрогнуть от чего-то"))

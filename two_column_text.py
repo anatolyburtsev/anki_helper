@@ -35,7 +35,10 @@ class TwoColumnText:
 
     def handle_text(self, line_delimiter="\n"):
         result_text = ""
-        self.delimiter = helpers.find_delimiter(self.text)
+        delimiter = helpers.find_delimiter(self.text)
+        if not delimiter:
+            delimiter = helpers.find_delimiter_euristic(self.text)
+        self.delimiter = delimiter
         for line in self.text.split(line_delimiter):
             # здесь формируется вывод
             if not helpers.is_string_good(line, self.delimiter):
@@ -46,6 +49,7 @@ class TwoColumnText:
             if result_line:
                 result_text = result_text + result_line + "\n"
         self.handled_text = result_text
+        # print(self.handled_text)
         return result_text
 
     def save_handled_text(self, dir_to_save=config.result_share):
