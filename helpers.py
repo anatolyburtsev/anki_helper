@@ -177,6 +177,8 @@ def find_delimiter_euristic_line(line):
     '@'
     >>> find_delimiter_euristic_line("  пышь/ПЫШЬ @  pew/PEW-wow ")
     '@'
+    >>> find_delimiter_euristic_line("superior — превосходный")
+    '—'
 
     :param line:
     :return:
@@ -198,7 +200,7 @@ def find_delimiter_euristic_line(line):
         if line[letter_no] in second_langueage_letters and not start_2nd_part:
             start_2nd_part = letter_no
 
-    if start_2nd_part > finish_1st_part:
+    if start_2nd_part <= finish_1st_part:
         print("problem with euristic detection delimiter in line: {}".format(line))
     delimiter = line[finish_1st_part+1:start_2nd_part].strip()
     return delimiter
