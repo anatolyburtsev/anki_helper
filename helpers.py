@@ -57,7 +57,8 @@ def handle_words(words):
     assert len(words) > 1
     words_external = []
     for word in words:
-        words_external.append(dict_api.lookup_ts_pos_force(word))
+        if len(word) > 2:
+            words_external.append(dict_api.lookup_ts_pos_force(word))
 
     pos = ""
     for word in words_external:
