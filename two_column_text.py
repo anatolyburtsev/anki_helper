@@ -43,6 +43,7 @@ class TwoColumnText:
             # здесь формируется вывод
             if not helpers.is_string_good(line, self.delimiter):
                 continue
+            line = helpers.handle_line(line)
             words = self.split_string_to_words(line)
             eng_word, rus_word = line.split(self.delimiter)[0:2]
             result_line = helpers.handle_words_or_word(words).format(eng=eng_word, rus=rus_word, tab="\t")

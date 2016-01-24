@@ -58,6 +58,40 @@ def make_beauty_some_words(words_dict, pos):
     return result.format(pos=pos, word="{eng}", ts=ts, rus="{rus}", tab="{tab}")
 
 
+def handle_line(line):
+    """
+    >>> handle_line("● Blow away the cobwebs - прогуляться, проветриться")
+    'Blow away the cobwebs - прогуляться, проветриться'
+    >>> handle_line("verb [vɜːb] - глагол")
+    'verb   - глагол'
+    >>> handle_line("verb - глагол(pew) ")
+    'verb - глагол'
+    >>> handle_line("fall down – 1) пасть ниц; 2) потерпеть неудачу")
+    'fall down – 1) пасть ниц; 2) потерпеть неудачу'
+
+    :param line:
+    :return handled line:
+    """
+
+    # remove [] and ()
+    while ("[" in line and "]" in line) or ("(" in line and ")" in line):
+        cutted_line = re.split("\[*\]*", line)
+        if len(cutted_line) > 1:
+            del cutted_line[1]
+            line = " ".join(cutted_line)
+        cutted_line = re.split("\(*\)*", line)
+        if len(cutted_line) > 1:
+            del cutted_line[1]
+            line = " ".join(cutted_line)
+
+    for i in range(len(line)):
+        if line[i].lower() in ENGLISH_LETTERS or line[i].lower() in RUSSIAN_LETTERS:
+            break
+    line = line[i:]
+
+    return line.strip()
+
+
 def handle_words(words):
     assert type(words) == list
     assert len(words) > 1
@@ -179,6 +213,9 @@ def find_delimiter_euristic_line(line):
     '@'
     >>> find_delimiter_euristic_line("superior — превосходный")
     '—'
+    >>> find_delimiter_euristic_line("lovey-dovey — шаловливый, игривый, влюбленный (ame)")
+    problem with euristic detection delimiter in line: lovey-dovey — шаловливый, игривый, влюбленный (ame)
+    ''
 
     :param line:
     :return:
@@ -202,9 +239,9 @@ def find_delimiter_euristic_line(line):
 
     if start_2nd_part <= finish_1st_part:
         print("problem with euristic detection delimiter in line: {}".format(line))
+        return ""
     delimiter = line[finish_1st_part+1:start_2nd_part].strip()
     return delimiter
-
 
 
 def is_english(text):
