@@ -35,6 +35,7 @@ def process_post_text():
         return "Couldn't download post from VK"
     t = two_column_text.TwoColumnText(text, url)
     result = t.handle_text()
+    # print(result)
     if not result:
         return "Bad text"
     else:

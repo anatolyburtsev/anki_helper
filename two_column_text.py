@@ -45,8 +45,19 @@ class TwoColumnText:
                 continue
             line = helpers.handle_line(line)
             words = self.split_string_to_words(line)
-            eng_word, rus_word = line.split(self.delimiter)[0:2]
-            result_line = helpers.handle_words_or_word(words).format(eng=eng_word, rus=rus_word, tab="\t")
+            try:
+                eng_word, rus_word = line.split(self.delimiter)[0:2]
+            except ValueError:
+                logging.error("problem with delimiter: {} in line:{}".format(self.delimiter, line))
+                result_line = ""
+            else:
+                if helpers.is_english(rus_word) or helpers.is_russian(eng_word):
+                    # print("doing it!")
+                    tmp = rus_word
+                    rus_word = eng_word
+                    eng_word = tmp
+                    # print("eng:{}, rus:{}".format(eng_word, rus_word))
+                result_line = helpers.handle_words_or_word(words).format(eng=eng_word, rus=rus_word, tab="\t")
             if result_line:
                 result_text = result_text + result_line + "\n"
         self.handled_text = result_text

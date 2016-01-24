@@ -171,7 +171,7 @@ def find_delimiter(text, dash_types=False):
     return False
 
 
-def find_delimiter_euristic(text):
+def find_delimiter_euristic(text, max_delimiter_size=2, stake_for_approve_delimiter=0.7):
     """
     :param text:
     :return delimiter:
@@ -200,7 +200,24 @@ def find_delimiter_euristic(text):
             delimiter_amount = delimiter_amount_max
             delimiter_most_popular = delimiter
 
-    return delimiter_most_popular
+    # если длина делимитера >2, то вероятно он определился не так
+    # вместо =, определился ...=
+    if len(delimiter_most_popular) > max_delimiter_size:
+        logging.info("Delimiter too long:{}".format(delimiter_most_popular))
+        short_possible_delimiter = set()
+        # отбираем возможные
+        for delimiter in possible_delimiter:
+            if len(delimiter) <= max_delimiter_size:
+                short_possible_delimiter.add(delimiter)
+        for pretendent_delimiter in short_possible_delimiter:
+            relevant = 0
+            for delimiter in possible_delimiter:
+                if pretendent_delimiter in delimiter:
+                    relevant += 1
+            if relevant/len(possible_delimiter) > stake_for_approve_delimiter:
+                logging.info("I think this delimiter better:{}".format(pretendent_delimiter))
+                return pretendent_delimiter
+    return delimiter_most_popular.strip()
 
 
 def find_delimiter_euristic_line(line):
